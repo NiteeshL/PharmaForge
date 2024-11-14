@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="logout-container">
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+  <h1 id="welcomeMessage">Welcome!</h1>
+  <div class="details">
+    <h2>Employee Details</h2>
+    <table id="employeeTable">
+      <thead>
+        <tr>
+          <th>Employee ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+        </tr>
+      </thead>
+      <tbody id="employeeDetails">
+        <!-- Employee details will be populated here -->
+      </tbody>
+    </table>
+  </div>
+  <div class="button-container">
+    <button class="button button1" onclick="addDrug()">Add Drug</button>
+    <button class="button button2" onclick="removeDrug()">Remove Drug</button>
+    <button class="button button3" onclick="viewDrug()">View Drugs</button>
+    <button class="button button4" onclick="redirectToQueryPage()">Customer</button>
+  </div>    
+
+  <script>
+    window.onload = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const EmployeeID = urlParams.get('EmployeeID');
+
+      fetch(`/getEmployeeDetails?EmployeeID=${EmployeeID}`)
+        .then(response => response.json())
+        .then(employee => {
+          const welcomeMessage = document.getElementById('welcomeMessage');
+          welcomeMessage.textContent = `Welcome, ${employee.Employee_name}!`;
+
+          const employeeDetailsTable = document.getElementById('employeeDetails');
+          const row = employeeDetailsTable.insertRow();
+
+          const idCell = row.insertCell(0);
+          idCell.textContent = employee.Employee_ID;
+
+          const nameCell = row.insertCell(1);
+          nameCell.textContent = employee.Employee_name;
+
+          const emailCell = row.insertCell(2);
+          emailCell.textContent = employee.Email_ID;
+
+          const phoneCell = row.insertCell(3);
+          phoneCell.textContent = employee.Phone;
+        })
+        .catch(error => console.error('Error fetching employee details:', error));
+    };
+
+    function addDrug() {
+      const Drug_ID = prompt("Enter Drug ID:");
+      const Drug_name = prompt("Enter Drug Name:");
+      const Quantity = prompt("Enter Quantity:");
+      const Price = prompt("Enter Price:");
+      const Description = prompt("Enter Description:");
+      const Expiry_date = prompt("Enter Expiry Date (YYYY-MM-DD):");
+  
+      if (!Drug_ID || !Drug_name || !Quantity || !Price || !Description || !Expiry_date) {
+        alert("Please fill in all the fields.");
+        return;
+      }
+      fetch('/addDrug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Drug_ID,
+          Drug_name,
+          Quantity,
+          Price,
+          Description,
+          Expiry_date
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Drug added successfully!');
+        } else {
+          alert('Failed to add drug.');
+        }
+      })
+      .catch(error => console.error('Error adding drug:', error));
+    }
+
+    function removeDrug() {
+      const Drug_name = prompt("Enter name of the drug to be removed:");
+      
+      fetch('/removeDrug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Drug_name })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json(); // Parse response body as JSON
+        } else {
+          throw new Error('Failed to remove drug.'); // Throw error for failed response
+        }
+      })
+      .then(data => {
+        // Check if the response data contains success information
+        if (data.success) {
+          alert('Drug removed successfully!');
+        } else {
+          alert('Failed to remove drug.');
+        }
+      })
+      .catch(error => console.error('Error removing drug:', error));
+    }
+
+    function viewDrug() {
+      window.location.href = '/view.html';
+    }
+
+    function logout() {
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (confirmLogout) {
+        window.location.href = "/login.html"; // Redirect to login page
+      }
+    }
+
+    function redirectToQueryPage() {
+      window.location.href = '/query.html';
+    }
+  </script>
+</body>
+</html>

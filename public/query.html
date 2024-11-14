@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Query Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="logout-container">
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+  <h1 id="welcomeMessage">Customer details, feedback, queries & orders</h1>
+  <h2 style="margin-top: 50px;">Feedbacks</h2>
+  <table id="feedbackTable">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Feedback</th>
+      </tr>
+    </thead>
+    <tbody id="feedbackDetails">
+      <!-- Feedback details will be populated here -->
+    </tbody>
+  </table>
+  <h2 style="margin-top: 50px;">Queries</h2>
+  <table id="queryTable">
+    <thead>
+      <tr>
+        <th>Reference ID</th>
+        <th>Username</th>
+        <th>Query</th>
+      </tr>
+    </thead>
+    <tbody id="queryDetails">
+      <!-- Query details will be populated here -->
+    </tbody>
+  </table>
+  <h2 style="margin-top: 50px;">Orders</h2>
+  <table id="orderTable">
+      <thead>
+          <tr>
+              <th>Order ID</th>
+              <th>Items</th>
+              <th>Quantity</th>
+              <th>Total Price</th>
+              <th>Amount</th>
+              <th>Drug ID</th>
+              <th>Username</th>
+              <th>Placed on</th>
+              <th>Arriving before</th>
+          </tr>
+      </thead>
+      <tbody id="orderDetails">
+          <!-- Order details will be populated here -->
+      </tbody>
+  </table>
+  <h2 style="margin-top: 50px;">Customer Details</h2>
+  <table id="customerDetails">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email ID</th>
+            <th>Address</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Customer details will be populated here -->
+    </tbody>
+</table>
+  <script>
+      function formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear().toString().slice(0);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    window.onload = () => {
+      // Fetch all order details
+fetch('/getAllOrders')
+    .then(response => response.json())
+    .then(orders => {
+        const orderDetailsTable = document.getElementById('orderDetails');
+
+        // Clear existing rows
+        orderDetailsTable.innerHTML = '';
+
+        // Populate order details
+        orders.forEach(order => {
+            const row = orderDetailsTable.insertRow();
+            row.insertCell(0).textContent = order.Order_ID;
+            row.insertCell(1).textContent = order.Items;
+            row.insertCell(2).textContent = order.Quantity;
+            row.insertCell(3).textContent = order.Total_price;
+            row.insertCell(4).textContent = order.Amount;
+            row.insertCell(5).textContent = order.Drug_ID;
+            row.insertCell(6).textContent = order.Username;
+            row.insertCell(7).textContent = formatDate(order.Order_Placed);
+            row.insertCell(8).textContent = formatDate(order.Expected_Delivery);
+        });
+    })
+    .catch(error => console.error('Error fetching all order details:', error));
+
+// Fetch all customer details
+fetch('/getAllCustomers')
+    .then(response => response.json())
+    .then(customers => {
+        const customerDetailsTable = document.getElementById('customerDetails');
+
+        // Populate customer details
+        customers.forEach(customer => {
+            const row = customerDetailsTable.insertRow();
+            row.insertCell(0).textContent = customer.Username;
+            row.insertCell(1).textContent = customer.Customer_name;
+            row.insertCell(2).textContent = customer.Email_ID;
+            row.insertCell(3).textContent = customer.Address;
+            row.insertCell(4).textContent = customer.Phone;
+        });
+    })
+    .catch(error => console.error('Error fetching all customer details:', error));
+
+      // Fetch feedback details
+      fetch('/getFeedback')
+        .then(response => response.json())
+        .then(feedback => {
+          const feedbackTable = document.getElementById('feedbackDetails');
+
+          // Populate feedback details
+          feedback.forEach(item => {
+            const row = feedbackTable.insertRow();
+            row.insertCell(0).textContent = item.Username;
+            row.insertCell(1).textContent = item.Response;
+          });
+        })
+        .catch(error => console.error('Error fetching feedback details:', error));
+
+      // Fetch query details
+      fetch('/getQuery')
+        .then(response => response.json())
+        .then(queries => {
+          const queryTable = document.getElementById('queryDetails');
+
+          // Populate query details
+          queries.forEach(item => {
+            const row = queryTable.insertRow();
+            row.insertCell(0).textContent = item.Reference_ID;
+            row.insertCell(1).textContent = item.Username;
+            row.insertCell(2).textContent = item.Query;
+          });
+        })
+        .catch(error => console.error('Error fetching query details:', error));
+    };
+
+    function logout() {
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (confirmLogout) {
+        window.location.href = "/login.html"; // Redirect to login page
+      }
+    }
+  </script>
+</body>
+</html>

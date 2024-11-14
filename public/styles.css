@@ -1,0 +1,308 @@
+.details {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+  }
+  .custdetails {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 120px;
+    font-size: large;
+  }
+  .details2 {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 420px;
+  }
+  .details3 {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+  }
+  .details4 {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 550px;
+  }
+  .login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .login-fields {
+    margin-bottom: 10px;
+  }
+  
+  .login-fields label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .login-fields input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button[type="submit"] {
+    width: 104%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  
+  #error-message {
+    color: red;
+  }
+  .login-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .login-form {
+    width: 30%; /* Adjust as needed */
+    margin: 0 100px;
+    padding-top: 150px;
+  }
+
+  @media (max-width: 768px) {
+    .login-container {
+      flex-direction: column;
+    }
+
+    .login-form {
+      width: 100%;
+      margin: 5px 0;
+    }
+  }
+
+  /* Add your CSS styles here */
+/* Add your CSS styles here */
+body {
+  font-family: Arial, sans-serif;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Add your CSS styles here */
+.button-container {
+  text-align: center;
+  margin-top: 20px; /* Adjust margin as needed */
+}
+
+.button {
+  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button1 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #04AA6D;
+}
+
+.button1:hover {
+  background-color: #04AA6D;
+  color: white;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.button2 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #f44336;
+}
+
+.button2:hover {
+  background-color: #f44336;
+  color: white;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+.button3 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid gray;
+}
+
+.button3:hover {
+  background-color: gray;
+  color: white;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+.button4 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid rgb(255, 200, 36);
+}
+.button4:hover {
+  background-color: rgb(255, 200, 36);
+  color: black;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+.logout-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+.delete-container {
+  position: fixed;
+  top: 20px;
+  right: 130px;
+}
+
+.delete-button {
+  background-color: #f44336; /* Red */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  border: 2px solid #f44336;
+}
+.logout-button {
+  background-color: #f44336; /* Red */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  border: 2px solid #f44336;
+}
+
+.logout-button:hover {
+  background-color: white;
+  color: #f44336; /* Red */
+  border: 2px solid #f44336;
+}
+.delete-button:hover {
+  background-color: white;
+  color: #f44336; /* Red */
+  border: 2px solid #f44336;
+}
+.signup{
+  background-color: rgb(255,216,20);
+  border-radius: 18px;
+  border: none;
+  height:30px;
+  width: 100px;
+  cursor: pointer;
+  transition: background-color 0.15s,color 0.15s;
+  margin-top: 10px;
+  margin-left: 360px;
+}
+.signup:hover{
+  color: rgb(255,164,28);;
+  background-color: black;
+  }
+.signup:active{
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.15);
+}
+
+.submit-feedback-button{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgb(255,216,20);
+  border-radius: 18px;
+  border: none;
+  height:30px;
+  width: 150px;
+  cursor: pointer;
+  transition: background-color 0.15s,color 0.15s;
+  margin-top: 10px;
+  margin-left: 360px;
+}
+.submit-feedback-button:hover{
+  color: rgb(255,164,28);;
+  background-color: black;
+}
+.submit-feedback-button:active{
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.15);
+}
+.submit-order{
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #007bff; 
+  color: #fff; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 16px; 
+  transition-duration: 0.4s;
+}
+.submit-order:hover{
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}

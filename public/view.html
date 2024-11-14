@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Drugs</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Drugs Available</h1>
+    <div class="logout-container">
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+    <div class="details4">
+    <table id="drugDetails">
+        <thead id="drugTable">
+            <tr>
+                <th>Drug ID</th>
+                <th>Drug Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Expiry Date</th>
+            </tr>
+        </thead>
+        <tbody id="drugDetails">
+            <!-- Drug details will be inserted here dynamically -->
+        </tbody>
+    </table>
+    </div>
+    <script>
+
+function formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear().toString().slice(0);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+        window.onload = () => {
+    fetch('/getDrugDetails')
+        .then(response => response.json())
+        .then(drugs => {
+            const drugDetailsTable = document.getElementById('drugDetails').getElementsByTagName('tbody')[0];
+
+            // Clear existing rows
+            drugDetailsTable.innerHTML = '';
+
+            // Populate drug details
+            drugs.forEach(drug => {
+                const row = drugDetailsTable.insertRow();
+                row.insertCell(0).textContent = drug.Drug_ID;
+                row.insertCell(1).textContent = drug.Drug_name;
+                row.insertCell(2).textContent = drug.Quantity;
+                row.insertCell(3).textContent = drug.Price;
+                row.insertCell(4).textContent = drug.Description;
+                row.insertCell(5).textContent = formatDate(drug.Expiry_date);
+            });
+        })
+        .catch(error => console.error('Error fetching drug details:', error));
+};
+function logout() {
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (confirmLogout) {
+        window.location.href = "/login.html"; // Redirect to login page
+      }
+    }
+    </script>
+</body>
+</html>

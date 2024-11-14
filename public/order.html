@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Drugs</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="logout-container">
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  <h1>Available Drugs</h1>
+  <div class="details3">
+  <table id="drugTable">
+    <thead>
+      <tr>
+        <th>Drug ID</th>
+        <th>Drug Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Description</th>
+        <th>Expiry Date</th>
+      </tr>
+    </thead>
+    <tbody id="drugDetails">
+      <!-- Drug details will be populated here -->
+    </tbody>
+  </table>
+  </div>
+  <h1 style="font-size: 30px; margin-bottom: 20px; text-align: center;">Place Order</h1>
+  <div class="order-form" style="width: 300px; margin: 0 auto; text-align: center;">
+    <label for="drugName" style="display: block; margin-bottom: 5px;text-align: left;">Drug Name:</label>
+    <input type="text" id="drugName" name="drugName" style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;">
+    <label for="quantity" style="display: block; margin-bottom: 5px;text-align: left;">Quantity:</label>
+    <input type="number" id="quantity" name="quantity" style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;">
+    <button onclick="submitOrder()" class="submit-order">Submit Order</button>
+  </div>
+  <script>
+  function formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear().toString().slice(0);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    window.onload = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const Username = urlParams.get('Username');
+
+      
+      fetch('/getDrugDetails')
+        .then(response => response.json())
+        .then(drugs => {
+          const drugDetailsTable = document.getElementById('drugDetails');
+
+          // Clear existing rows
+          drugDetailsTable.innerHTML = '';
+
+          // Populate drug details
+          drugs.forEach(drug => {
+            const row = drugDetailsTable.insertRow();
+            row.insertCell(0).textContent = drug.Drug_ID;
+            row.insertCell(1).textContent = drug.Drug_name;
+            row.insertCell(2).textContent = drug.Quantity;
+            row.insertCell(3).textContent = drug.Price;
+            row.insertCell(4).textContent = drug.Description;
+            row.insertCell(5).textContent = formatDate(drug.Expiry_date);
+          });
+        })
+        .catch(error => console.error('Error fetching drug details:', error));
+    };
+ 
+    function logout() {
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (confirmLogout) {
+        window.location.href = "/login.html"; // Redirect to login page
+      }
+    }
+
+ function submitOrder() {
+    const drugName = document.getElementById('drugName').value;
+    const quantity = document.getElementById('quantity').value;
+
+    if (!drugName || !quantity) {
+        alert('Please enter both drug name and quantity.');
+        return;
+    }
+    const quantityNumber = parseInt(quantity);
+
+    // Check if quantity is 0 or NaN (not a number)
+    if (quantityNumber === 0 || isNaN(quantityNumber)) {
+        alert('Please enter a valid quantity.');
+        return;
+    }
+    // Fetch the username from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('Username');
+
+    fetch('/getDrugDetails2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ drugName: drugName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if drug quantity is available
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+        
+        // Proceed with order placement
+        const drugQuantity = data.quantity;
+        if (quantityNumber > drugQuantity) {
+            alert('Quantity entered is greater than the available quantity.');
+            return;
+        }
+         
+            const orderData = {
+                items: drugName,
+                quantity: quantity,
+                username: username // Include the username parameter
+            };
+
+            fetch('/submitOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Call subtractQuantityFromDrugs function
+                        subtractQuantityFromDrugs(drugName, quantity);
+                        alert('Order placed successfully.');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to place order. Please try again.');
+                    }
+                })
+                .catch(error => console.error('Error placing order:', error));
+        })
+        .catch(error => console.error('Error fetching drug details:', error));
+}
+
+
+function subtractQuantityFromDrugs(drugName, quantity) {
+    fetch('/subtractQuantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ drugName, quantity })
+    })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Error subtracting quantity from drugs:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Error subtracting quantity from drugs:', error));
+}
+  </script>
+</body>
+</html>
