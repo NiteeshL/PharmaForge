@@ -1,0 +1,354 @@
+-- DDL
+create database if not exists pharmacy;
+USE pharmacy;
+create table if not exists custlogin(Username varchar(25), Password varchar(25));
+create table if not exists emplogin(Employee_ID int primary key, Password varchar(100));
+create table if not exists customer(Username varchar(25) primary key ,Customer_name varchar(25), Email_ID varchar(25), Address varchar(100), Phone bigint);
+create table if not exists employee(Employee_ID int, FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID),Employee_name varchar(25),Email_ID varchar(25) , Phone bigint);
+create table if not exists orders(Order_ID int primary key, Items varchar(100),Quantity int,Total_price int, Amount int, Drug_ID int, Username varchar (25), Order_Placed date, Expected_Delivery date);
+create table if not exists drugs(Drug_ID int primary key, Drug_name varchar(100),Quantity int, Price int, Description varchar(100), Expiry_date date);
+ALTER TABLE employee ADD INDEX Employee_name (Employee_name, Email_ID, Phone);
+CREATE TABLE IF NOT EXISTS pharmacy(Employee_name varchar(25),Address varchar (100), Email_ID varchar(25), Phone bigint;
+CREATE TABLE IF NOT EXISTS feedback(Username varchar(25),Response varchar(100));
+CREATE TABLE IF NOT EXISTS help(Reference_ID int primary key AUTO_INCREMENT, Username varchar(25),Query varchar(100));
+
+ALTER TABLE orders MODIFY Order_ID INT AUTO_INCREMENT;
+ALTER TABLE orders
+ADD FOREIGN KEY (Drug_ID) REFERENCES drugs(Drug_ID);
+ALTER TABLE custlogin
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+ALTER TABLE feedback 
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+ALTER TABLE help
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+
+--trigger
+DELIMITER //
+CREATE TRIGGER update_total_price
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    SET NEW.Total_price = NEW.Amount * NEW.Quantity;
+END //
+DELIMITER ;
+
+-- views
+CREATE VIEW customerlist as
+SELECT Customer_name, Phone
+FROM customer;
+-- View for customer details including their orders
+CREATE VIEW customer_orders_view AS
+SELECT c.Username, c.Customer_name, c.Email_ID, c.Address, c.Phone, o.Order_ID, o.Items, o.Quantity, o.Total_price, o.Amount, o.Drug_ID, o.Order_Placed, o.Expected_Delivery
+FROM customer c
+LEFT JOIN orders o ON c.Username = o.Username;
+-- View for employee details along with their login information
+CREATE VIEW employee_login_view AS
+SELECT e.Employee_ID, e.Employee_name, e.Email_ID, e.Phone, el.Password
+FROM employee e
+INNER JOIN emplogin el ON e.Employee_ID = el.Employee_ID;
+-- View for drug details along with their available quantity
+CREATE VIEW drug_inventory_view AS
+SELECT d.Drug_ID, d.Drug_name, d.Quantity AS Available_Quantity, d.Price, d.Description, d.Expiry_date
+FROM drugs d;
+-- View for feedback details with customer usernames
+CREATE VIEW feedback_username_view AS
+SELECT f.Username, f.Response
+FROM feedback f;
+SELECT * FROM customer_orders_view;
+SELECT * FROM employee_login_view;
+SELECT * FROM drug_inventory_view;
+SELECT * FROM feedback_username_view;
+SELECT * FROM customerlist;
+SHOW tables;
+
+-- integrity constraints
+ALTER TABLE orders ADD CONSTRAINT price check(Total_price >0);
+ALTER TABLE drugs ADD CONSTRAINT qt check(Quantity>=0);
+ALTER TABLE drugs ADD CONSTRAINT pc check(Price>0);
+ALTER TABLE orders
+ADD FOREIGN KEY (Drug_ID) REFERENCES drugs(Drug_ID);
+ALTER TABLE custlogin
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+ALTER TABLE feedback 
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+ALTER TABLE help
+ADD FOREIGN KEY (Username) REFERENCES customer(Username);
+ALTER TABLE custlogin
+ADD UNIQUE (Username);
+ALTER TABLE customer
+ADD UNIQUE (Username);
+ALTER TABLE emplogin
+ADD UNIQUE (Employee_ID);
+ALTER TABLE employee
+ADD UNIQUE (Employee_ID);
+ALTER TABLE custlogin
+MODIFY Password varchar(25) NOT NULL;
+ALTER TABLE emplogin
+MODIFY Password varchar(25) NOT NULL;
+ALTER TABLE drugs
+MODIFY Price varchar(25) NOT NULL;
+ALTER TABLE orders
+MODIFY Total_price varchar(25) NOT NULL;
+
+
+-- DML
+INSERT INTO emplogin VALUES(889,'Mog');
+INSERT INTO employee VALUES(889,'Niteesh','niteesh@gmail.com',9372926283);
+INSERT INTO emplogin VALUES(890,'Mew');
+INSERT INTO employee VALUES(890,'Arunabha Jana','arunabha@gmail.com',1728362961);
+INSERT INTO emplogin VALUES(876,'Edge');
+INSERT INTO employee VALUES(876,'Vishal','vishalkr@gmail.com',9362836383);
+INSERT INTO pharmacy VALUES('Niteesh','Chennai branch, Opp to VR mall, Anna nagar, Chennai-603203','niteesh@gmail.com',9372926283);
+INSERT INTO pharmacy VALUES('Arunabha Jana','ECR branch, Near mahabalipuram, Thirumangalam, Chennai-605006','arunabha@gmail.com',1728362961);
+INSERT INTO pharmacy VALUES('Vishal','Besant nagar branch, Opp to burgerman, Chennai-602043','vishalkr@gmail.com',9362836383);
+SELECT * FROM custlogin;
+SELECT * FROM emplogin;
+SELECT * FROM customer;
+SELECT * FROM employee;
+SELECT * FROM orders;
+SELECT * FROM drugs;
+select * from pharmacy;
+select * from feedback;
+select * from help;
+
+INSERT INTO customer VALUES('Doss','Vishal','vishalkr@gnail.com','Anna nagar',9282738272);
+INSERT INTO customer VALUES('GD6','Gurudeva','gd@gnail.com','Pondicherry',6373628726);
+INSERT INTO customer VALUES('Kani123','Kanishkarraj','kanishk@gnail.com','Chettinad',8326387283);
+INSERT INTO customer VALUES('niteesh','Niteesh','ryangosling@gnail.com','Pondicherry',95843837384);
+INSERT INTO custlogin VALUES('niteesh','niteesh');
+INSERT INTO custlogin VALUES('Doss','2003');
+INSERT INTO custlogin VALUES('GD6','gurud');
+INSERT INTO custlogin VALUES('Kani123','Goyi'); 
+INSERT INTO drugs VALUES(51,'Dolo 650',15,20,'Fever, cold','2027-03-03');
+INSERT INTO drugs values(22,'Paracetamol',30,40,'Fever','2028-05-01');
+INSERT INTO drugs VALUES(78,'Crocin advanced',50,20,'Body pain','2025-01-19');
+INSERT INTO orders VALUES(1,'Dolo 650',5,100,20,51,'Doss','2028-01-03','2028-01-05');
+INSERT INTO orders VALUES(2,'Paracetamol',10,400,40,22,'niteesh','2028-05-17','2028-05-19');
+INSERT INTO orders VALUES(3,'Crocin advanced',2,40,20,78,'GD6','2028-03-20','2028-03-22');
+
+
+-- basic select statements
+SELECT Order_ID,Items,Drug_ID,Quantity,Amount,Total_price FROM orders;
+SELECT * FROM customer 
+ORDER BY customer_name asc;
+SELECT * FROM customer 
+ORDER BY customer_name asc;
+SELECT * FROM drugs 
+ORDER BY Drug_ID asc;
+SELECT * FROM orders 
+ORDER BY Order_ID asc;
+SELECT * 
+FROM customer limit 2;
+SELECT * 
+FROM customer limit 1,2;
+SELECT Total_price FROM orders WHERE Order_ID=2;
+SELECT Quantity FROM drugs WHERE Drug_name='Dolo 650';
+
+-- sql functions
+SELECT AVG (Total_price) FROM orders;
+SELECT AVG (price) FROM drugs;
+SELECT COUNT(*) FROM custlogin;
+SELECT COUNT(*) FROM customer;
+SELECT COUNT(DISTINCT Drug_name) FROM drugs;
+SELECT COUNT(*) FROM orders WHERE Total_price>=100;
+SELECT DISTINCT Employee_ID FROM employee;
+SELECT MAX(Total_price) FROM orders;
+SELECT MIN(Total_price) FROM orders;
+SELECT SUM(Amount) FROM orders;
+SELECT DATE_FORMAT(Expiry_date, '%d %b %Y') FROM drugs;
+SELECT avg(Total_price) FROM orders;
+SELECT max(Total_price) FROM orders;
+SELECT avg(Total_price) FROM orders;
+
+-- join tables
+SELECT* 
+FROM emplogin inner join employee
+ON emplogin.Employee_ID=employee.Employee_ID;
+SELECT* 
+FROM emplogin left join employee
+ON emplogin.Employee_ID=employee.Employee_ID;
+SELECT* 
+FROM emplogin right join employee
+ON emplogin.Employee_ID=employee.Employee_ID;
+SELECT* 
+FROM orders inner join drugs
+ON orders.Drug_ID=drugs.Drug_ID;
+SELECT* 
+FROM orders left join drugs
+ON orders.Drug_ID=drugs.Drug_ID;
+SELECT* 
+FROM orders right join drugs
+ON orders.Drug_ID=drugs.Drug_ID;
+
+-- subqueries
+SELECT Order_ID,Items,Drug_ID,Quantity,Amount,Total_price
+FROM orders WHERE Total_price > (SELECT avg(Total_price) FROM orders);
+SELECT Order_ID FROM orders WHERE Total_price < (SELECT Total_price FROM orders WHERE Order_ID=2);
+SELECT Drug_name,Quantity FROM drugs WHERE Quantity > (SELECT Quantity FROM drugs 
+WHERE Drug_name='Dolo 650');
+SELECT Order_ID,Total_price FROM orders 
+WHERE Total_price = (SELECT min(Total_price) FROM orders);
+SELECT Order_ID,  Total_price FROM orders 
+WHERE Total_price =(SELECT max(Total_price) FROM orders);
+SELECT  Order_ID,Total_price FROM orders 
+WHERE Total_price <(SELECT avg(Total_price) FROM orders);
+
+
+-- set operations
+SELECT Username FROM custlogin UNION SELECT Username FROM customer;
+SELECT Username FROM custlogin WHERE Username IN (SELECT Username FROM customer);
+SELECT Username FROM custlogin WHERE Username NOT IN (SELECT Username FROM customer);
+SELECT Drug_ID FROM drugs UNION SELECT Drug_ID FROM orders;
+SELECT Drug_ID, Drug_name FROM drugs WHERE Drug_ID IN (SELECT Drug_ID FROM orders);
+SELECT Drug_ID, Drug_name FROM drugs WHERE Drug_ID NOT IN (SELECT Drug_ID FROM orders);
+SELECT Employee_ID FROM emplogin UNION SELECT Employee_ID FROM employee;
+SELECT Employee_ID FROM emplogin WHERE Employee_ID NOT IN (SELECT Employee_ID FROM employee);
+
+-- TCL
+START TRANSACTION;
+INSERT INTO emplogin VALUES(889,'Mog');
+INSERT INTO employee VALUES(889,'Niteesh','niteesh@gmail.com',9372926283);
+INSERT INTO customer VALUES('Doss','Vishal','vishalkr@gnail.com','Anna nagar',9282738272,'2003');
+INSERT INTO customer VALUES('GD6','Gurudeva','gd@gnail.com','Pondicherry',6373628726,'gurud');
+INSERT INTO customer VALUES('Kani123','Kanishkarraj','kanishk@gnail.com','Chettinad',8326387283,'Goyi');
+INSERT INTO customer VALUES('niteesh','Niteesh','ryangosling@gnail.com','Pondicherry',95843837384,'niteesh');
+INSERT INTO custlogin VALUES('niteesh','niteesh');
+INSERT INTO custlogin VALUES('Doss','2003');
+INSERT INTO custlogin VALUES('GD6','gurud');
+INSERT INTO custlogin VALUES('Kani123','Goyi'); 
+INSERT INTO drugs VALUES(51,'Dolo 650',15,20,'Fever, cold','2027-03-03');
+INSERT INTO drugs values(22,'Paracetamol',30,40,'Fever','2028-05-01');
+INSERT INTO drugs VALUES(78,'Crocin advanced',50,20,'Body pain','2025-01-19');
+INSERT INTO orders (Items, Quantity, Amount, Drug_ID, Username, Order_Placed, Expected_Delivery) 
+VALUES('Crocin advanced',2,40,78,'GD6','2028-03-20','2028-03-22');
+
+ROLLBACK;
+COMMIT;
+
+--cursor
+DELIMITER //
+CREATE PROCEDURE get_customer_orders_count()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE customer_username VARCHAR(25);
+    DECLARE orders_count INT;
+    DECLARE customer_cursor CURSOR FOR
+    SELECT Username FROM customer;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE; 
+    OPEN customer_cursor; 
+    customer_loop: LOOP
+        FETCH customer_cursor INTO customer_username;
+        IF done THEN
+            LEAVE customer_loop;
+        END IF; 
+        SELECT COUNT(*) INTO orders_count
+        FROM orders 
+        WHERE Username = customer_username;
+        
+        SELECT CONCAT('Customer ', customer_username, ' has ', orders_count, ' orders.') AS orders_info;
+    END LOOP; 
+    CLOSE customer_cursor;
+END //
+DELIMITER ;
+CALL get_customer_orders_count();
+
+-- DCL
+CREATE USER IF NOT EXISTS 'niteesh'@'localhost' IDENTIFIED BY 'pass';
+SELECT user FROM mysql.user WHERE user = 'niteesh' AND host = 'localhost';
+GRANT SELECT, INSERT, UPDATE ON pharmacy.* TO 'niteesh'@'localhost';
+GRANT CREATE USER, GRANT OPTION ON *.* TO 'niteesh'@'localhost';
+FLUSH PRIVILEGES;
+
+
+--Normalization 2NF
+create table if not exists customer(
+    Username varchar(25) primary key,
+    Customer_name varchar(25),
+    Email_ID varchar(25)
+);
+
+create table if not exists customer_contact(
+    Username varchar(25),
+    Address varchar(100),
+    Phone bigint,
+    primary key (Username, Address, Phone),
+    foreign key (Username) references customer(Username)
+);
+
+CREATE TABLE IF NOT EXISTS employee (
+    Employee_ID INT PRIMARY KEY,
+    Employee_name VARCHAR(25),
+    Email_ID VARCHAR(25),
+    FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID)
+);
+CREATE TABLE IF NOT EXISTS phone_numbers (
+    Phone_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Employee_ID INT,
+    Phone BIGINT,
+    FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID)
+);
+
+
+--before normalization
+create database if not exists befor;
+use befor;
+create table if not exists customer(Username varchar(25) ,Customer_name varchar(25), Email_ID varchar(25), Address varchar(100), Phone bigint);
+create table if not exists emplogin(Employee_ID int primary key, Password varchar(100));
+create table if not exists employee(Employee_ID int, FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID),Employee_name varchar(25),Email_ID varchar(25) , Phone bigint);
+
+INSERT INTO emplogin VALUES(889,'Mog');
+INSERT INTO employee values(889,'Niteesh','nl9234@srmist.edu.in',9791825805);
+INSERT INTO employee values(889,'Niteesh','nl9234@srmist.edu.in',9443103805);
+INSERT INTO customer VALUES('niteesh','Niteesh','nl9234@srmist.edu.in','Pondicherry',9584383734);
+INSERT INTO customer VALUES ('niteesh','Niteesh','nl9234@srmist.edu.in','Chennai',9273837393);
+select * from customer;
+select * from employee;
+
+
+--after normalization
+create database if not exists after;
+use after;
+create table if not exists customer(
+    Username varchar(25) primary key,
+    Customer_name varchar(25),
+    Email_ID varchar(25)
+);
+create table if not exists customer_contact(
+    Username varchar(25),
+    Address varchar(100),
+    Phone bigint,
+    primary key (Address, Phone),
+    foreign key (Username) references customer(Username)
+);
+create table if not exists emplogin(Employee_ID int primary key, Password varchar(100));
+CREATE TABLE IF NOT EXISTS employee (
+    Employee_ID INT PRIMARY KEY,
+    Employee_name VARCHAR(25),
+    Email_ID VARCHAR(25),
+    FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID)
+);
+
+CREATE TABLE IF NOT EXISTS phone_numbers (
+    Employee_ID INT,
+    Phone BIGINT primary key,
+    FOREIGN KEY (Employee_ID) REFERENCES emplogin(Employee_ID)
+);
+INSERT INTO emplogin VALUES(889,'Mog');
+INSERT INTO employee values(889,'Niteesh','nl9234@srmist.edu.in');
+INSERT INTO phone_numbers values(889,9791825805);
+INSERT INTO phone_numbers values(889,9443103805);
+INSERT INTO customer VALUES('Niteesh','niteesh','nl9234@srmist.edu.in');
+INSERT INTO customer_contact VALUES('Niteesh','Pondicherry',9584383734);
+INSERT INTO customer_contact VALUES('Niteesh','Chennai',9273837393);
+select * from customer;
+select * from customer_contact;
+select * from employee;
+select * from phone_numbers;
+
+
+
+
+
+
+
+
