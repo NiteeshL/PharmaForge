@@ -54,7 +54,7 @@ This project is a Pharmacy Management System that allows customers and employees
 
 ## Project Structure
 ```
-/DBMS
+/PharmaForge
 ├── public
 │   ├── customer.html
 │   ├── login.html
